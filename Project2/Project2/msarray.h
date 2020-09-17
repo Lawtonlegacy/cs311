@@ -12,6 +12,9 @@
 #include <cstdlib>
 #include <algorithm>
 
+// Invariants:
+// _size >= 0
+
 template <typename ValType>
 class MSArray {
 
@@ -19,39 +22,42 @@ class MSArray {
 public:
 
 	// Default Constructor
-	MSArray() 
-	: _size(8), _arrayPtr(new ValType[_size]) {}
+	MSArray() {
+		_size = 8;
+		_arrayPtr = new ValType[_size];
+	}
 
 	// 1-parameter Constructor
-	MSArray(const std::size_t size) 
-	: _size(size), _arrayPtr(new ValType[_size]) {}
+	MSArray(const std::size_t size) {
+		_size = size;
+		_arrayPtr = new ValType[_size];
+	}
 
 	// 2-parameter Constructor
-	MSArray(const std::size_t & size, const ValType & fill) 
-	: _size(size), _arrayPtr(new ValType[_size]) 
-	{
+	MSArray(const std::size_t & size, const ValType & fill) {
+		_size = size;
+		_arrayPtr = new ValType[_size];
 		std::fill(begin(), end(), fill);
 	}
 
 
 	// Destructor
-	~MSArray() 
-	{
+	~MSArray() {
 		delete[] _arrayPtr;
 	}
 
 
 	// Copy Constructor
-	MSArray(const MSArray & other) 
-	: _size(other.size()), _arrayPtr(new ValType[_size]) 
-	{
+	MSArray(const MSArray & other) {
+		_size = other.size();
+		_arrayPtr = new ValType[_size];
 		std::copy(other.begin(), other.end(), begin());
 	}
 
 	// Move Constructor
-	MSArray(MSArray && other) noexcept 
-	: _size(other._size), _arrayPtr(other._arrayPtr) 
-	{
+	MSArray(MSArray && other) noexcept  {
+		_size = other._size;
+		_arrayPtr = other._arrayPtr;
 		other._size = 0;
 		other._arrayPtr = nullptr;
 	}
@@ -65,7 +71,7 @@ public:
 	}
 
 	// Move Assignment Constructor
-	MSArray& operator=(MSArray && rhs) {
+	MSArray& operator=(MSArray && rhs) noexcept {
 		mswap(rhs);
 		return *this;
 	}
