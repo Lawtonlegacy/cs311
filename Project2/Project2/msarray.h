@@ -12,8 +12,8 @@
 #include <cstdlib>
 #include <algorithm>
 
-// Invariants:
-// _size >= 0
+// Invariants: _size => 0
+// Requirements on Types: ValType requires operators != and <
 
 template <typename ValType>
 class MSArray {
@@ -28,12 +28,14 @@ public:
 	}
 
 	// 1-parameter Constructor
+	// Pre: size param must be non-negative
 	MSArray(const std::size_t size) {
 		_size = size;
 		_arrayPtr = new ValType[_size];
 	}
 
 	// 2-parameter Constructor
+	// Pre: size param must be non-negative
 	MSArray(const std::size_t & size, const ValType & fill) {
 		_size = size;
 		_arrayPtr = new ValType[_size];
@@ -48,6 +50,7 @@ public:
 
 
 	// Copy Constructor
+	// Pre: Valid MSArray Object
 	MSArray(const MSArray & other) {
 		_size = other.size();
 		_arrayPtr = new ValType[_size];
@@ -55,25 +58,12 @@ public:
 	}
 
 	// Move Constructor
+	// Pre: Valid MSArray Object
 	MSArray(MSArray && other) noexcept  {
 		_size = other._size;
 		_arrayPtr = other._arrayPtr;
 		other._size = 0;
 		other._arrayPtr = nullptr;
-	}
-
-
-	// Copy Assignment Operator
-	MSArray & operator=(const MSArray & rhs) {
-		MSArray copy(rhs);
-		mswap(copy);
-		return *this;
-	}
-
-	// Move Assignment Constructor
-	MSArray& operator=(MSArray && rhs) noexcept {
-		mswap(rhs);
-		return *this;
 	}
 
 
@@ -93,6 +83,7 @@ private:
 	// Number of items the array holds
 	std::size_t _size;
 
+
 // ***** MSArray: Private Functions *****
 private:
 
@@ -103,20 +94,39 @@ private:
 		std::swap(_arrayPtr, other._arrayPtr);
 	}
 
+
 // ***** MSArray: Public Member Functions & Operators *****
 public:
 
+	// Copy Assignment Operator
+	// Pre: Valid MSArray Object
+	MSArray& operator=(const MSArray& rhs) {
+		MSArray copy(rhs);
+		mswap(copy);
+		return *this;
+	}
+
+	// Move Assignment Constructor
+	// Pre: Valid MSArray Object
+	MSArray& operator=(MSArray&& rhs) noexcept {
+		mswap(rhs);
+		return *this;
+	}
+
+
 	// Bracket operator []
+	// Pre: Integer subscript from 0 to size -1, 
+	// where size is the number of items in array
 	value_type & operator[](const std::size_t & i) const {
 		return _arrayPtr[i];
 	}
 
-	// size
+	// size 
 	size_type size() const {
 		return _size;
 	}
 	
-	// begin
+	// begin 
 	value_type * begin() {
 		return &_arrayPtr[0];
 	}
@@ -144,6 +154,8 @@ public:
 
 
 // Equality operator ==
+// Pre: Two objects of class MSArray with the same value types
+// Requirements on Types: ValType requires operator !=
 template <typename ValType>
 bool operator==(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 	return std::equal(a.begin(), a.end(), b.begin(), b.end());
@@ -151,12 +163,16 @@ bool operator==(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 
 
 // Inequality operator !=
+// Pre: Two objects of class MSArray with the same value types
+// Requirements on Types: ValType requires operator !=
 template <typename ValType>
 bool operator!=(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 	return !(a == b);
 }
 
 // Less than operator <
+// Pre: Two objects of class MSArray with the same value types
+// Requirements on Types: ValType requires operator <
 template <typename ValType>
 bool operator<(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 	return std::lexicographical_compare(a.begin(), a.end(),
@@ -164,24 +180,28 @@ bool operator<(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 }
 
 // Less than or equal to operator <=
+// Pre: Two objects of class MSArray with the same value types
+// Requirements on Types: ValType requires operator <
 template <typename ValType>
 bool operator<=(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 	return !(a > b);
 }
 
 // Greater than operator >
+// Pre: Two objects of class MSArray with the same value types
+// Requirements on Types: ValType requires operator <
 template <typename ValType>
 bool operator>(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 	return b < a;
 }
 
 // Greater than or equal to operator >=
+// Pre: Two objects of class MSArray with the same value types
+// Requirements on Types: ValType requires operator <
 template <typename ValType>
 bool operator>=(const MSArray<ValType> & a, const MSArray<ValType> & b) {
 	return !(a < b);
 }
-
-
 
 
 #endif //#ifndef FILE_MSARRAY_INCLUDED
