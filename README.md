@@ -1,1 +1,1 @@
-# cs311
+# CS 311 Datastructures & Algorithms
